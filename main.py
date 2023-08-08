@@ -2,6 +2,11 @@ import os.path
 
 import torch
 import argparse
+import torch.nn as nn
+
+from src.network import Network
+from src.trainingLoop import trainModel
+from src.datasetGenerator import Dataset
 
 def showModels(dir: str, modelEnding="pt"):
     print("Searching...")
@@ -18,11 +23,37 @@ def showModels(dir: str, modelEnding="pt"):
         print("Models found: " +  counter)
         print("--------------------")
 
-def trainModel(loadModelDir: str, saveModelDir: str, device: str):
-    print("TODO")
+def startTrainModel(loadModelDir: str, saveModelDir: str, device: str, epochs: int = 1):
+    network = Network(2, 64, 30, True, 1, activation_function=nn.ReLU()).to(device)
+    if loadModelDir:
+        network = loadNetwork(loadModelDir)
+
+
+
+    dataset = Dataset(
+        dir,
+        width_range=(4, 32),
+        height_range=(4, 32),
+        size_range=(4, 16)
+        )
+    evalData = Dataset(
+        dir,
+        width_range=(4, 32),
+        height_range=(4, 32),
+        size_range=(4, 16)
+        ) #TODO split dataset insetad of duplicating
+
+    trainModel(network, dataset, evalData, epochs)
+
 
 def runModel(loadModelDir: str, saveOutputAt: str, showOutput: bool, device: str):
+    network = loadNetwork(loadModelDir)
+
+    #TODO run Newtork, show and save output
+
+def loadNetwork(loadDir: str):
     print("TODO")
+    #TODO load network with errorhandling
 
 if __name__ == '__main__':
 
@@ -117,7 +148,7 @@ if __name__ == '__main__':
             if inputManualy:
                 valid = False
                 while not valid:
-                    print("load Model (emty for new Model): ", end="")
+                    print("load Model (empty for new Model): ", end="")
                     modelDir = input()
                     valid = os.path.exists(modelDir) #TODO check if file is valid model
                     if modelDir == "": valid = True
@@ -129,11 +160,11 @@ if __name__ == '__main__':
                     saveDir = input()
                     valid = os.path.exists(saveDir)
                     if not valid: print("dir not found")
-                trainModel(loadModelDir=modelDir, saveModelDir=saveDir, device=device)
+                startTrainModel(loadModelDir=modelDir, saveModelDir=saveDir, device=device)
             else:
                 if not args.trainSave or not os.path.exists(args.trainSave):
                     raise ValueError("--trainSave is not defined or not found")
-                trainModel(loadModelDir=args.trainLoad, saveModelDir=args.trainSave, device=device)
+                startTrainModel(loadModelDir=args.trainLoad, saveModelDir=args.trainSave, device=device)
         elif userInput == 3:
             if inputManualy:
                 valid = False

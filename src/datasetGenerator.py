@@ -6,9 +6,8 @@ from PIL import Image
 from torch.utils.data import Dataset
 import torch
 from torchvision import transforms
-from cudaDevice import *
 
-class RandomImagePixelationDataset(Dataset):
+class Dataset(Dataset):
 
     def __init__(
             self,
@@ -18,9 +17,9 @@ class RandomImagePixelationDataset(Dataset):
             size_range: tuple[int, int],
             dtype: Optional[type] = None
     ):
-        RandomImagePixelationDataset._check_range(width_range, "width")
-        RandomImagePixelationDataset._check_range(height_range, "height")
-        RandomImagePixelationDataset._check_range(size_range, "size")
+        Dataset._check_range(width_range, "width")
+        Dataset._check_range(height_range, "height")
+        Dataset._check_range(size_range, "size")
         self.image_files = sorted(path.abspath(f) for f in glob(path.join(image_dir, "**", "*.jpg"), recursive=True))
         self.width_range = width_range
         self.height_range = height_range
@@ -34,7 +33,7 @@ class RandomImagePixelationDataset(Dataset):
         if r[0] > r[1]:
             raise ValueError(f"minimum {name} must be <= maximum {name}")
 
-    def __getitem__(self, index):
+    def __getitem__(self, index, device):
         with Image.open(self.image_files[index]) as im:
             image = np.array(im, dtype=self.dtype)
         image = to_grayscale(image)  # Image shape is now (1, H, W)

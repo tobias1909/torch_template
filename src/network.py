@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-class DepixelationNetwork(nn.Module):
+class Network(nn.Module):
     def __init__(
             self,
             input_channels: int,

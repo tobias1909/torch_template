@@ -3,9 +3,6 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 import matplotlib.pyplot as plt
-from test import showTest
-import numpy as np
-from cudaDevice import *
 
 def trainModel(network, dataset, evalData, epoch):
 
@@ -83,7 +80,5 @@ def training_loop(
             loss = eval_step(network, torch.concat([data, known_array], dim=1), targets, known_array, loss_fnc)
             epoch_eval_losses.append(loss)
         eval_losses.append(torch.mean(torch.tensor(epoch_eval_losses)))
-        #showTest(network, "C:\\Users\\Tobias\\OneDrive\\JKU\\4.Semester\\python2\\task7_projekt\\prod\\print1.jpg",index)
-        #showTest(network, "C:\\Users\\Tobias\\OneDrive\\JKU\\4.Semester\\python2\\task7_projekt\\prod\\print2.jpg",index)
 
     return train_losses, eval_losses
