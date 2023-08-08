@@ -3,8 +3,20 @@ import os.path
 import torch
 import argparse
 
-def showModels():
-    print("TODO")
+def showModels(dir: str, modelEnding="pt"):
+    print("Searching...")
+    data = os.walk(dir)
+    counter = 0
+    for dir in data:
+        print("Dir: " + dir[0])
+        print("--------------------")
+        for model in dir[2]:
+            if model.split(".")[-1] == modelEnding:
+                print(model)
+                counter += 1
+        print("--------------------")
+        print("Models found: " +  counter)
+        print("--------------------")
 
 def trainModel(loadModelDir: str, saveModelDir: str, device: str):
     print("TODO")
@@ -31,7 +43,6 @@ if __name__ == '__main__':
 
     # arguments for show models
     parser.add_argument("--showModelsDir", type=str, default=".", help="Specify dir to search for models.")
-
 
     args = parser.parse_args()
 
@@ -100,7 +111,6 @@ if __name__ == '__main__':
                     raise ValueError("'--load' is undefined or not found")
                 if not os.path.exists(args.showOutput):
                     raise ValueError("'--showOutput' is undefined or not found")
-                # TODO check if args.showOutput has invalid argument
                 runModel(loadModelDir=args.load, saveOutputAt=args.saveOutput, showOutput=args.showOutput, device=device)
         elif userInput == 2:
             print("TRAIN MODEL")
@@ -125,7 +135,21 @@ if __name__ == '__main__':
                     raise ValueError("--trainSave is not defined or not found")
                 trainModel(loadModelDir=args.trainLoad, saveModelDir=args.trainSave, device=device)
         elif userInput == 3:
-            showModels()
+            if inputManualy:
+                valid = False
+                while not valid:
+                    print("Enter dir to search (empty for all): ")
+                    dirInput = input()
+                    if dirInput == "":
+                        dirInput = "."
+                        valid = True
+                    elif os.path.exists(dirInput):
+                        valid = True
+                showModels(dirInput)
+            else:
+                if not os.path.exists(args.showModelsDir):
+                    raise ValueError("The directory specified in '--showModelsDir' does not exist")
+                showModels(args.showModelsDir)
 
         elif userInput == 4:
             break
@@ -135,5 +159,3 @@ if __name__ == '__main__':
 
         if not inputManualy:
             break
-
-
